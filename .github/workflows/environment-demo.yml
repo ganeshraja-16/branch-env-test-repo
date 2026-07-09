@@ -1,22 +1,42 @@
-name: Environment Demo
+name: Multi Environment Demo
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - develop
+      - staging
+      - main
 
 jobs:
   deploy-dev:
+    if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     environment: Development
 
     steps:
-      - name: Show Development Variable
-        run: echo "Deploying ${{ vars.APP_NAME }}"
+      - run: |
+          echo "${{ vars.MESSAGE }}"
+          echo "Cluster: ${{ vars.CLUSTER_NAME }}"
+          echo "Service: ${{ vars.SERVICE_NAME }}"
+
+  deploy-stage:
+    if: github.ref == 'refs/heads/staging'
+    runs-on: ubuntu-latest
+    environment: Staging
+
+    steps:
+      - run: |
+          echo "${{ vars.MESSAGE }}"
+          echo "Cluster: ${{ vars.CLUSTER_NAME }}"
+          echo "Service: ${{ vars.SERVICE_NAME }}"
 
   deploy-prod:
-    needs: deploy-dev
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: Production
 
     steps:
-      - name: Show Production Variable
-        run: echo "Deploying ${{ vars.APP_NAME }}"
+      - run: |
+          echo "${{ vars.MESSAGE }}"
+          echo "Cluster: ${{ vars.CLUSTER_NAME }}"
+          echo "Service: ${{ vars.SERVICE_NAME }}"
