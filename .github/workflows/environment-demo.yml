@@ -1,42 +1,26 @@
-name: Multi Environment Demo
+name: Deploy Demo
 
 on:
-  push:
-    branches:
-      - develop
-      - staging
-      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Choose the environment"
+        required: true
+        type: choice
+        options:
+          - Development
+          - Staging
+          - Production
 
 jobs:
-  deploy-dev:
-    if: github.ref == 'refs/heads/develop'
+  deploy:
     runs-on: ubuntu-latest
-    environment: Development
+
+    environment: ${{ inputs.environment }}
 
     steps:
-      - run: |
-          echo "${{ vars.MESSAGE }}"
-          echo "Cluster: ${{ vars.CLUSTER_NAME }}"
-          echo "Service: ${{ vars.SERVICE_NAME }}"
-
-  deploy-stage:
-    if: github.ref == 'refs/heads/staging'
-    runs-on: ubuntu-latest
-    environment: Staging
-
-    steps:
-      - run: |
-          echo "${{ vars.MESSAGE }}"
-          echo "Cluster: ${{ vars.CLUSTER_NAME }}"
-          echo "Service: ${{ vars.SERVICE_NAME }}"
-
-  deploy-prod:
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    environment: Production
-
-    steps:
-      - run: |
-          echo "${{ vars.MESSAGE }}"
-          echo "Cluster: ${{ vars.CLUSTER_NAME }}"
-          echo "Service: ${{ vars.SERVICE_NAME }}"
+      - name: Show Selected Environment
+        run: |
+          echo "Environment: ${{ inputs.environment }}"
+          echo "Message: ${{ vars.MESSAGE }}"
+          echo "App Name: ${{ vars.APP_NAME }}"
